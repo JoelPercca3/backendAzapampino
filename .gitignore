@@ -1,0 +1,34 @@
+echo "# Dependencias
+node_modules/
+.pnp/
+.pnp.js
+
+# Archivos de entorno
+.env
+.env.local
+.env.*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+*.log
+
+# Base de datos
+*.sqlite
+*.db
+
+# Archivos subidos
+uploads/
+temp/
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo" > .gitignore
