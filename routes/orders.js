@@ -3,6 +3,14 @@ import pool from "../db/connection.js";
 
 const router = Router();
 
+// Función para obtener fecha/hora de Perú
+const getPeruDateTime = () => {
+  const now = new Date();
+  // Restar 5 horas para UTC-5 (Perú)
+  const peruDate = new Date(now.getTime() - 5 * 60 * 60 * 1000);
+  return peruDate.toISOString().slice(0, 19).replace("T", " ");
+};
+
 // POST /api/orders — crear pedido
 router.post("/", async (req, res) => {
   const conn = await pool.getConnection();
@@ -29,10 +37,21 @@ router.post("/", async (req, res) => {
     );
     const total = subtotal;
 
+    // ✅ Usar fecha de Perú
+    const peruDateTime = getPeruDateTime();
+
     const [orderResult] = await conn.query(
-      `INSERT INTO orders (table_name, customer_name, subtotal, total, payment_method, notes)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [table_name, customer_name, subtotal, total, payment_method, notes],
+      `INSERT INTO orders (table_name, customer_name, subtotal, total, payment_method, notes, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [
+        table_name,
+        customer_name,
+        subtotal,
+        total,
+        payment_method,
+        notes,
+        peruDateTime,
+      ],
     );
     const orderId = orderResult.insertId;
 
@@ -66,10 +85,10 @@ router.post("/", async (req, res) => {
   }
 });
 
-// GET /api/orders — listar pedidos del día
+// GET /api/orders — listar pedidos por fecha (zona horaria Perú)
 router.get("/", async (req, res) => {
   try {
-    const { date = new Date().toISOString().slice(0, 10), status } = req.query;
+    const { date = getPeruDateTime().slice(0, 10), status } = req.query;
 
     let sql = `
       SELECT o.*, COUNT(oi.id) AS item_count

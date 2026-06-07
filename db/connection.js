@@ -7,6 +7,8 @@ const pool = mysql.createPool({
   user: process.env.DB_USER || "root",
   password: process.env.DB_PASSWORD || "",
   database: process.env.DB_NAME || "recreo_pos",
+  timezone: "-05:00", // ✅ Zona horaria de Perú
+
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
